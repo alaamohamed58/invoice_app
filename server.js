@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const app = require("./app");
 dotenv.config({ path: "./config.env" });
 mongoose.set("strictQuery", true);
+
 //server connect
 const port = process.env.PORT || 3000;
 

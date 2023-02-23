@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const invoiceItem = new mongoose.Schema({
   item_name: {
     type: String,
@@ -26,9 +25,9 @@ const invoiceSchema = new mongoose.Schema({
   customer_email: {
     type: String,
     match: /@/,
+    unique: true,
     required: [true, "Customer email is required"],
     trim: true,
-    unique: true,
     minlength: [2, "Customer email must be at least 1 character long"],
     maxlength: [30, "customer email cannot exceed 30 characters"],
   },
@@ -37,12 +36,12 @@ const invoiceSchema = new mongoose.Schema({
     unique: true,
     required: [true, "Customer phone is required"],
     trim: true,
-    unique: true,
     minlength: [10, "customer phone cannot be below 10 characters"],
     maxlength: [20, "customer phone cannot exceed 20 characters"],
   },
   customer_address: {
     type: String,
+    unique: true,
     //  required: [true, "Customer address is required"],
     trim: true,
     minlength: [4, "customer address must be at least 4 characters long"],
@@ -60,6 +59,6 @@ invoiceSchema.path("items").validate(function (items) {
   }
   return true;
 }, "Invoice items needs to have at least one item");
-const Invoice = mongoose.model("Invoice", invoiceSchema);
 
+const Invoice = mongoose.model("Invoice", invoiceSchema);
 module.exports = Invoice;
