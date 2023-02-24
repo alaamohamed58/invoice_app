@@ -1,4 +1,5 @@
 const Invoice = require("../models/invoiceModel");
+const ApiFeatures = require("../utils/apiFeatures");
 //Create Invoice
 
 exports.createInvoice = async (req, res) => {
@@ -21,7 +22,9 @@ exports.createInvoice = async (req, res) => {
 //Get All Invoices
 exports.getInvoices = async (req, res) => {
   try {
-    const invoices = await Invoice.find();
+    const features = new ApiFeatures(req.query, Invoice.find()).ordering();
+    const invoices = await features.query;
+
     res.status(200).json({
       message: "Successfully retrieved all",
       count: invoices.length,
@@ -86,13 +89,12 @@ exports.deleteInvoice = async (req, res) => {
     });
   }
 };
-/*
-const deleteAll = async () => {
-  try {
-    await Invoice.deleteMany({});
-  } catch (err) {
-    console.log(err);
-  }
-};
-deleteAll();
-*/
+
+// const deleteAll = async () => {
+//   try {
+//     await Invoice.deleteMany({});
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+// deleteAll();

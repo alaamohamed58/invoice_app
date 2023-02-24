@@ -47,6 +47,12 @@ const invoiceSchema = new mongoose.Schema({
     minlength: [4, "customer address must be at least 4 characters long"],
     maxlength: [30, "customer address cannot exceed 30 characters"],
   },
+  status: {
+    type: String,
+    default: "Pending",
+    enum: ["Pending", "Paid", "pending", "paid"],
+    required: [true, "Status must be included in"],
+  },
   items: {
     type: [invoiceItem],
   },
