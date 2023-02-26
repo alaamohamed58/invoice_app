@@ -22,7 +22,11 @@ exports.createInvoice = async (req, res) => {
 //Get All Invoices
 exports.getInvoices = async (req, res) => {
   try {
-    const features = new ApiFeatures(req.query, Invoice.find()).ordering();
+    const features = new ApiFeatures(req.query, Invoice.find())
+      .ordering()
+      .filtering()
+      .limitFields()
+      .paginate();
     const invoices = await features.query;
 
     res.status(200).json({

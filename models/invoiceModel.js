@@ -15,37 +15,56 @@ const invoiceItem = new mongoose.Schema({
 });
 
 const invoiceSchema = new mongoose.Schema({
-  customer_name: {
+  client_name: {
     type: String,
-    required: [true, "Customer name is required"],
+    required: [true, "Client name is required"],
     trim: true,
-    minlength: [4, "customer name must be at least 4 characters long"],
-    maxlength: [30, "customer name cannot exceed 30 characters"],
+    minlength: [4, "client name must be at least 4 characters long"],
+    maxlength: [30, "client name cannot exceed 30 characters"],
   },
-  customer_email: {
+  client_email: {
     type: String,
     match: /@/,
     unique: true,
-    required: [true, "Customer email is required"],
+    required: [true, "client email is required"],
     trim: true,
-    minlength: [2, "Customer email must be at least 1 character long"],
-    maxlength: [30, "customer email cannot exceed 30 characters"],
+    minlength: [2, "client email must be at least 1 character long"],
+    maxlength: [30, "client email cannot exceed 30 characters"],
   },
-  customer_phone: {
+  client_phone: {
     type: Number,
     unique: true,
-    required: [true, "Customer phone is required"],
+    required: [true, "client phone is required"],
     trim: true,
-    minlength: [10, "customer phone cannot be below 10 characters"],
-    maxlength: [20, "customer phone cannot exceed 20 characters"],
+    minlength: [10, "client phone cannot be below 10 characters"],
+    maxlength: [20, "client phone cannot exceed 20 characters"],
   },
-  customer_address: {
+  client_city: {
     type: String,
-    unique: true,
-    //  required: [true, "Customer address is required"],
     trim: true,
-    minlength: [4, "customer address must be at least 4 characters long"],
-    maxlength: [30, "customer address cannot exceed 30 characters"],
+    minlength: [4, "client city must be at least 4 characters long"],
+    maxlength: [20, "client city cannot exceed 30 characters"],
+  },
+  client_country: {
+    type: String,
+    trim: true,
+    minlength: [4, "client country must be at least 4 characters long"],
+    maxlength: [20, "client country cannot exceed 30 characters"],
+  },
+  client_address: {
+    type: String,
+    trim: true,
+    minlength: [4, "client address must be at least 4 characters long"],
+    maxlength: [30, "client address cannot exceed 30 characters"],
+  },
+  zip_code: {
+    type: Number,
+    required: [true, "client zip code is required"],
+    trim: true,
+  },
+  payment_due: {
+    type: Date,
+    required: [true, "payment due date is required"],
   },
   status: {
     type: String,
