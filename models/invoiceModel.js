@@ -12,6 +12,9 @@ const invoiceItem = new mongoose.Schema({
     type: Number,
     required: [true, "item price is required"],
   },
+  total: {
+    type: Number,
+  },
 });
 
 const invoiceSchema = new mongoose.Schema({
@@ -24,17 +27,14 @@ const invoiceSchema = new mongoose.Schema({
   },
   client_email: {
     type: String,
-    match: /@/,
-    unique: true,
-    required: [true, "client email is required"],
     trim: true,
     minlength: [2, "client email must be at least 1 character long"],
     maxlength: [30, "client email cannot exceed 30 characters"],
+    match: /@/,
+    sparse: true, // allow null or empty string
   },
   client_phone: {
     type: Number,
-    unique: true,
-    required: [true, "client phone is required"],
     trim: true,
     minlength: [10, "client phone cannot be below 10 characters"],
     maxlength: [20, "client phone cannot exceed 20 characters"],
@@ -59,12 +59,12 @@ const invoiceSchema = new mongoose.Schema({
   },
   zip_code: {
     type: Number,
-    required: [true, "client zip code is required"],
     trim: true,
   },
   payment_due: {
     type: Date,
     required: [true, "payment due date is required"],
+    default: new Date().toUTCString(),
   },
   status: {
     type: String,
@@ -84,6 +84,17 @@ invoiceSchema.path("items").validate(function (items) {
   }
   return true;
 }, "Invoice items needs to have at least one item");
+
+// Define a function to calculate the total based on price and quantity
+invoiceItem.methods.calculateTotal = function () {
+  return this.price * this.quantity;
+};
+
+// Set the total field using the calculateTotal function
+invoiceItem.pre("save", function (next) {
+  this.total = this.calculateTotal();
+  next();
+});
 
 const Invoice = mongoose.model("Invoice", invoiceSchema);
 module.exports = Invoice;

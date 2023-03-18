@@ -9,6 +9,7 @@ exports.createInvoice = catchAsync(async (req, res) => {
   //insert invoice
 
   const invoice = await Invoice.create(req.body);
+  invoice.__v = undefined;
   res.status(201).json({
     message: "Invoice Created",
     data: {

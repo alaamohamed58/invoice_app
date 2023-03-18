@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const invoiceRoute = require("./routes/invoiceRoutes");
+const userRoute = require("./routes/userRoute");
 const AppError = require("./utils/appError");
 const globalError = require("./controllers/errorController");
 const app = express();
@@ -10,6 +11,7 @@ app.use(morgan("tiny"));
 
 //mounting routes
 app.use("/api/v1/invoice", invoiceRoute);
+app.use("/api/v1/user", userRoute);
 
 //handle errors
 app.all("*", (req, res, next) => {
