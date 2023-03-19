@@ -1,19 +1,33 @@
+const jwt = require("jsonwebtoken");
 const Invoice = require("../models/invoiceModel");
 const ApiFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
-
+const AppError = require("../utils/appError");
+const User = require("../models/userModel");
 //handle async errors
 
 //Create Invoice
 exports.createInvoice = catchAsync(async (req, res) => {
-  //insert invoice
+  const authHeader = req.headers.authorization,
+    token = authHeader.split(" ")[1],
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  const invoice = await Invoice.create(req.body);
+  const user = await User.findById(decoded.id);
+
+  const invoice = await Invoice.create({ ...req.body, created_by: user._id });
   invoice.__v = undefined;
+
+  await invoice.populate("created_by", "name");
+
+  const { name } = invoice.created_by;
+
   res.status(201).json({
     message: "Invoice Created",
     data: {
-      invoice: invoice,
+      invoice: {
+        ...invoice.toObject(),
+        created_by: name,
+      },
     },
   });
 });
@@ -26,12 +40,23 @@ exports.getInvoices = catchAsync(async (req, res) => {
     .limitFields()
     .paginate();
   const invoices = await features.query;
+  const populatedInvoice = await Invoice.populate(invoices, {
+    path: "created_by",
+    select: "name",
+  });
+
+  const modifiedInvoice = populatedInvoice.map((invoice) => ({
+    ...invoice.toObject(),
+    created_by: invoice.created_by.name,
+  }));
+
+  const count = (await Invoice.find()).length;
 
   res.status(200).json({
     message: "Successfully retrieved all",
-    count: invoices.length,
+    count: count,
     data: {
-      invoices: invoices,
+      invoices: modifiedInvoice,
     },
   });
 });
@@ -68,9 +93,12 @@ exports.updateInvoice = catchAsync(async (req, res) => {
 });
 
 //Delete Invoice
-exports.deleteInvoice = catchAsync(async (req, res) => {
+exports.deleteInvoice = catchAsync(async (req, res, next) => {
   const invoice = await Invoice.findByIdAndDelete(req.params.id);
-  res.status(200).json({
+  if (!invoice) {
+    return next(new AppError(404, "Invoice not found"));
+  }
+  res.status(204).json({
     message: "Invoice Deleted",
   });
 });

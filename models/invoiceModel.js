@@ -75,6 +75,15 @@ const invoiceSchema = new mongoose.Schema({
   items: {
     type: [invoiceItem],
   },
+
+  created_at: {
+    type: Date,
+    default: new Date().toDateString(),
+  },
+  created_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 invoiceSchema.path("items").validate(function (items) {
   if (!items) {

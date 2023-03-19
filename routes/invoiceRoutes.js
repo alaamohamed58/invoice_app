@@ -1,5 +1,6 @@
 const express = require("express");
 const invoiceController = require("../controllers/invoiceController");
+const { protect } = require("../controllers/authController");
 
 const router = express.Router();
 
