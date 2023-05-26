@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const invoiceItem = new mongoose.Schema({
+const InvoiceItem = new mongoose.Schema({
   item_name: {
     type: String,
     required: [true, "item name is required"],
@@ -17,12 +17,12 @@ const invoiceItem = new mongoose.Schema({
   },
 });
 
-const invoiceSchema = new mongoose.Schema({
+const InvoiceSchema = new mongoose.Schema({
   client_name: {
     type: String,
     required: [true, "Client name is required"],
     trim: true,
-    minlength: [4, "client name must be at least 4 characters long"],
+    minlength: [2, "client name must be at least 4 characters long"],
     maxlength: [30, "client name cannot exceed 30 characters"],
   },
   client_email: {
@@ -73,7 +73,7 @@ const invoiceSchema = new mongoose.Schema({
     required: [true, "Status must be included in"],
   },
   items: {
-    type: [invoiceItem],
+    type: [InvoiceItem],
   },
 
   created_at: {
@@ -81,11 +81,12 @@ const invoiceSchema = new mongoose.Schema({
     default: new Date().toDateString(),
   },
   created_by: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: "User",
   },
 });
-invoiceSchema.path("items").validate(function (items) {
+
+InvoiceSchema.path("items").validate(function (items) {
   if (!items) {
     return false;
   } else if (items.length === 0) {
@@ -94,16 +95,21 @@ invoiceSchema.path("items").validate(function (items) {
   return true;
 }, "Invoice items needs to have at least one item");
 
-// Define a function to calculate the total based on price and quantity
-invoiceItem.methods.calculateTotal = function () {
-  return this.price * this.quantity;
-};
-
 // Set the total field using the calculateTotal function
-invoiceItem.pre("save", function (next) {
+InvoiceItem.pre("save", function (next) {
   this.total = this.calculateTotal();
   next();
 });
 
-const Invoice = mongoose.model("Invoice", invoiceSchema);
+InvoiceSchema.pre(/^find/, function (next) {
+  this.populate("created_by", "name");
+  next();
+});
+
+// Define a function to calculate the total based on price and quantity
+InvoiceItem.methods.calculateTotal = function () {
+  return this.price * this.quantity;
+};
+
+const Invoice = mongoose.model("Invoice", InvoiceSchema);
 module.exports = Invoice;

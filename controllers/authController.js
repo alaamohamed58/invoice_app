@@ -22,6 +22,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 
   user.__v = undefined;
+  user.password = undefined;
 
   const token = signInToken(user._id);
 
