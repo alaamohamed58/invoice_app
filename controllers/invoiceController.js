@@ -15,6 +15,5 @@ exports.getInvoices = getAll(Invoice, "Invoices");
 exports.getInvoice = getOne(Invoice);
 //Update Invoice
 exports.updateInvoice = updateOne(Invoice, "Invoice");
-
 //Delete Invoice
 exports.deleteInvoice = deleteOne(Invoice, "Invoice");

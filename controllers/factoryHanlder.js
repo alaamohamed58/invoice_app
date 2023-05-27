@@ -35,8 +35,11 @@ exports.getAll = (Model) =>
   });
 
 exports.getOne = (Model) =>
-  catchAsync(async (req, res) => {
+  catchAsync(async (req, res, next) => {
     const doc = await Model.findById(req.params.id);
+    if (!doc) {
+      return next(new AppError("There is no document with that id", 404));
+    }
     res.status(200).json({
       message: "Successfully retrieved specific document",
       results: {
@@ -46,11 +49,14 @@ exports.getOne = (Model) =>
   });
 
 exports.updateOne = (Model, docName) =>
-  catchAsync(async (req, res) => {
+  catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
+    if (!doc) {
+      return next(new AppError(`There is no ${docName} with that id`, 404));
+    }
     res.status(200).json({
       message: `${docName} Updated`,
       results: {
