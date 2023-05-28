@@ -1,10 +1,12 @@
 const express = require("express");
 const morgan = require("morgan");
-const invoiceRoute = require("./routes/invoiceRoutes");
-const userRoute = require("./routes/userRoute");
-const AppError = require("./utils/appError");
-const globalError = require("./controllers/errorController");
 const cors = require("cors");
+const invoiceRoute = require("./routes/invoiceRoute");
+const userRoute = require("./routes/userRoute");
+const companyRoute = require("./routes/companyRoute");
+const globalError = require("./controllers/errorController");
+
+const AppError = require("./utils/appError");
 
 const app = express();
 
@@ -16,6 +18,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 //mounting routes
 app.use("/api/v1/invoice", invoiceRoute);
+app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/user", userRoute);
 
 //handle errors
