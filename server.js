@@ -20,12 +20,7 @@ app.listen(port, () => {
 let db;
 
 if (process.env.NODE_ENV === "development") {
-  db = process.env.MONGODB_COMPASS;
-} else if (process.env.NODE_ENV === "production") {
-  db = process.env.DATABASE.replace(
-    "<PASSWORD>",
-    process.env.DATABASE_PASSWORD
-  );
+  db = process.env.DATABASE.replace("<PASSWORD>", process.env.PASSWORD);
 }
 
 mongoose.connect(db).then(() => console.log("Database connected"));
