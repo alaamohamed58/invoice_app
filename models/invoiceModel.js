@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AppError = require("../utils/appError");
 const InvoiceItem = new mongoose.Schema({
   item_name: {
     type: String,
@@ -18,6 +19,11 @@ const InvoiceItem = new mongoose.Schema({
 });
 
 const InvoiceSchema = new mongoose.Schema({
+  bill_from: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Company",
+    required: [true, "Company is required"],
+  },
   client_name: {
     type: String,
     required: [true, "Client name is required"],
@@ -95,6 +101,14 @@ InvoiceSchema.path("items").validate(function (items) {
   return true;
 }, "Invoice items needs to have at least one item");
 
+InvoiceItem.pre("save", async function (next) {
+  const company = await mongoose.model("Company").findById(this.bill_from);
+  if (!company) {
+    return next(new AppError("No Company found", 404));
+  }
+  next();
+});
+
 // Set the total field using the calculateTotal function
 InvoiceItem.pre("save", function (next) {
   this.total = this.calculateTotal();
@@ -103,6 +117,7 @@ InvoiceItem.pre("save", function (next) {
 
 InvoiceSchema.pre(/^find/, function (next) {
   this.populate("created_by", "name");
+  this.populate("bill_from", "company_name");
   next();
 });
 
