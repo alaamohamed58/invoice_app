@@ -5,13 +5,11 @@ const CompanySchema = new mongoose.Schema({
     type: String,
     required: [true, "Company name is required"],
     trim: true,
-    minLength: [2, "Company name must have at least two characters"],
     unique: true,
   },
   location: {
     type: String,
     trim: true,
-    minLength: [4, "Company location must have at least four characters"],
   },
   description: {
     type: String,
